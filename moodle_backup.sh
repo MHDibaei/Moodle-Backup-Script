@@ -54,7 +54,7 @@ if [ $DB_TYPE == "mariadb" ]; then
     echo "of the mariadb type..."
     DUMP_NAME="${DB_NAME}"_"${DATE}".sql
     DUMP_ADDRESS="${BACKUP_DIR}/${DUMP_NAME}"
-    mariadb-dump --user=${DB_USER} --password=${DB_PASSWORD} --host=${DB_HOST} --databases ${DB_NAME} > $DUMP_ADDRESS
+    mariadb-dump --user=${DB_USER} --password=${DB_PASSWORD}  --databases ${DB_NAME} > $DUMP_ADDRESS
     if [ "$?" -ne "0" ]; then
             echo -e "${red}failed!${clear}"
             exit 1
