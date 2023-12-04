@@ -9,6 +9,12 @@ clear='\033[0m'
 
 DATE=$(date +%Y%m%d)
 
+# Set default verbose mode to false and enable it if the second argument is --verbose
+VERBOSE=false
+if [ $# -eq 2 ] && [ "$2" == "--verbose" ]; then
+  VERBOSE=true
+fi
+
 # Check if Site DIR is specified as 1st argument
 if [ -z "$1" ]
 then
@@ -56,12 +62,21 @@ if [ $DB_TYPE == "mariadb" ]; then
     echo -e "${green}DB backup has finished. you can find it in ${DUMP_ADDRESS}${clear}"
 fi
 
-# Make archive of the backup
-echo -n "Creating moodle archive... "
+# Create the backup file name
 BACKUP_FILE="${BACKUP_DIR}/${DATE}.tar.gz"
-tar -czf $BACKUP_FILE $SITE_DIR $MDATA
-if [ "$?" -ne "0" ]; then
-                echo -e "${red}failed!${clear}"
-        exit 1
+
+# Create the backup archive
+echo -n "Creating moodle archive... "
+if $VERBOSE; then
+  tar -czfv $BACKUP_FILE $SITE_DIR $MDATA
+else
+  tar -czf $BACKUP_FILE $SITE_DIR $MDATA
 fi
+
+# Check the exit status of the tar command
+if [ $? -ne 0 ]; then
+  echo -e "${red}failed!${clear}"
+  exit 1
+fi
+
 echo -e "${green}Moodle files backup has finished. you can find it in ${BACKUP_FILE}${clear}"
