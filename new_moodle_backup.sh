@@ -29,7 +29,7 @@ LOG_FILE="${BACKUP_DIR}/backup.log"
 
 # Function to log messages
 log_message() {
-    echo "$(date): $1" | tee -a "${LOG_FILE}"
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): $1" | tee -a "${LOG_FILE}"
 }
 
 # Get the current date
