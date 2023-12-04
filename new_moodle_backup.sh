@@ -6,11 +6,19 @@ if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
     VERBOSE=1
 fi
 
-# Load Moodle configuration
-source /var/www/moodle/config.php
+# Define the path to Moodle's config.php
+CONFIG_FILE="/path/to/moodle/config.php"
+
+# Extract Moodle configuration
+DBTYPE=$(cat $CONFIG_FILE | grep "\$CFG->dbtype" | cut -d "'" -f 2)
+DBUSER=$(cat $CONFIG_FILE | grep "\$CFG->dbuser" | cut -d "'" -f 2)
+DBPASS=$(cat $CONFIG_FILE | grep "\$CFG->dbpass" | cut -d "'" -f 2)
+DBNAME=$(cat $CONFIG_FILE | grep "\$CFG->dbname" | cut -d "'" -f 2)
+DIRROOT=$(cat $CONFIG_FILE | grep "\$CFG->dirroot" | cut -d "'" -f 2)
+DATAROOT=$(cat $CONFIG_FILE | grep "\$CFG->dataroot" | cut -d "'" -f 2)
 
 # Define the backup directory
-BACKUP_DIR="${CFG->dirroot}/backup"
+BACKUP_DIR="${DIRROOT}/backup"
 
 # Create the backup directory if it doesn't exist
 mkdir -p "${BACKUP_DIR}"
@@ -28,18 +36,18 @@ CURRENT_DATE=$(date +%Y%m%d)
 
 # Export the Moodle database
 log_message "Starting database export..."
-if [ "${CFG->dbtype}" == "mariadb" ]; then
+if [ "${DBTYPE}" == "mariadb" ]; then
     if [ "${VERBOSE}" -eq 1 ]; then
-        mariadb-dump -v -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/mariadb-database_${CURRENT_DATE}.sql"
+        mariadb-dump -v -u "${DBUSER}" -p"${DBPASS}" "${DBNAME}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
     else
-        mariadb-dump -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/mariadb-database_${CURRENT_DATE}.sql"
+        mariadb-dump -u "${DBUSER}" -p"${DBPASS}" "${DBNAME}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
     fi
-    log_message "Database export completed."
+    log_message "MariaDB database export completed."
 else
     if [ "${VERBOSE}" -eq 1 ]; then
-        mysqldump -v -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
+        mysqldump -v -u "${DBUSER}" -p"${DBPASS}" "${DBNAME}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
     else
-        mysqldump -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
+        mysqldump -u "${DBUSER}" -p"${DBPASS}" "${DBNAME}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
     fi
     log_message "Database export completed."
 fi
@@ -47,18 +55,18 @@ fi
 # Create an archive of the Moodle directory
 log_message "Starting Moodle directory backup..."
 if [ "${VERBOSE}" -eq 1 ]; then
-    tar -cvzf "${BACKUP_DIR}/moodle-directory_${CURRENT_DATE}.tar.gz" "${CFG->dirroot}"
+    tar -cvzf "${BACKUP_DIR}/moodle_${CURRENT_DATE}.tar.gz" "${DIRROOT}"
 else
-    tar -czf "${BACKUP_DIR}/moodle-directory_${CURRENT_DATE}.tar.gz" "${CFG->dirroot}"
+    tar -czf "${BACKUP_DIR}/moodle_${CURRENT_DATE}.tar.gz" "${DIRROOT}"
 fi
 log_message "Moodle directory backup completed."
 
 # Create an archive of the Moodle data directory
 log_message "Starting Moodle data directory backup..."
 if [ "${VERBOSE}" -eq 1 ]; then
-    tar -cvzf "${BACKUP_DIR}/moodledata-directory_${CURRENT_DATE}.tar.gz" "${CFG->dataroot}"
+    tar -cvzf "${BACKUP_DIR}/moodledata_${CURRENT_DATE}.tar.gz" "${DATAROOT}"
 else
-    tar -czf "${BACKUP_DIR}/moodledata-directory_${CURRENT_DATE}.tar.gz" "${CFG->dataroot}"
+    tar -czf "${BACKUP_DIR}/moodledata_${CURRENT_DATE}.tar.gz" "${DATAROOT}"
 fi
 log_message "Moodle data directory backup completed."
 
