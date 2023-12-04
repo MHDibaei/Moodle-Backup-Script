@@ -30,11 +30,11 @@ CURRENT_DATE=$(date +%Y%m%d)
 log_message "Starting database export..."
 if [ "${CFG->dbtype}" == "mariadb" ]; then
     if [ "${VERBOSE}" -eq 1 ]; then
-        mysqldump -v -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/mariadb-database_${CURRENT_DATE}.sql"
+        mariadb-dump -v -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/mariadb-database_${CURRENT_DATE}.sql"
     else
-        mysqldump -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/mariadb-database_${CURRENT_DATE}.sql"
+        mariadb-dump -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/mariadb-database_${CURRENT_DATE}.sql"
     fi
-    log_message "MariaDB database export completed."
+    log_message "Database export completed."
 else
     if [ "${VERBOSE}" -eq 1 ]; then
         mysqldump -v -u "${CFG->dbuser}" -p"${CFG->dbpass}" "${CFG->dbname}" > "${BACKUP_DIR}/moodle-database_${CURRENT_DATE}.sql"
