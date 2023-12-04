@@ -14,8 +14,8 @@ DBTYPE=$(cat $CONFIG_FILE | grep "\$CFG->dbtype" | cut -d "'" -f 2)
 DBUSER=$(cat $CONFIG_FILE | grep "\$CFG->dbuser" | cut -d "'" -f 2)
 DBPASS=$(cat $CONFIG_FILE | grep "\$CFG->dbpass" | cut -d "'" -f 2)
 DBNAME=$(cat $CONFIG_FILE | grep "\$CFG->dbname" | cut -d "'" -f 2)
-DIRROOT=$(cat $CONFIG_FILE | grep "\$CFG->dirroot" | cut -d "'" -f 2)
 DATAROOT=$(cat $CONFIG_FILE | grep "\$CFG->dataroot" | cut -d "'" -f 2)
+DIRROOT=$(dirname $(dirname $CONFIG_FILE))
 
 # Define the backup directory
 BACKUP_DIR="${DIRROOT}/backup"
