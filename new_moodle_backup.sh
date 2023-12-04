@@ -7,7 +7,7 @@ if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
 fi
 
 # Define the path to Moodle's config.php
-CONFIG_FILE="/path/to/moodle/config.php"
+CONFIG_FILE="/var/www/moodle/config.php"
 
 # Extract Moodle configuration
 DBTYPE=$(cat $CONFIG_FILE | grep "\$CFG->dbtype" | cut -d "'" -f 2)
