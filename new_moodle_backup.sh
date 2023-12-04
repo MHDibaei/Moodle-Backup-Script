@@ -56,9 +56,9 @@ fi
 # Create an archive of the Moodle directory
 log_message "Starting Moodle directory backup..."
 if [ "${VERBOSE}" -eq 1 ]; then
-    tar -cvzf "${BACKUP_DIR}/moodle_${CURRENT_DATE}.tar.gz" "${DIRROOT}"
+    tar -cvzf "${BACKUP_DIR}/moodle_${CURRENT_DATE}.tar.gz" "${DIRROOT}/moodle"
 else
-    tar -czf "${BACKUP_DIR}/moodle_${CURRENT_DATE}.tar.gz" "${DIRROOT}"
+    tar -czf "${BACKUP_DIR}/moodle_${CURRENT_DATE}.tar.gz" "${DIRROOT}/moodle"
 fi
 log_message "Moodle directory backup completed."
 
