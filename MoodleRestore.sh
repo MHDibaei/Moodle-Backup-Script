@@ -24,14 +24,22 @@ if [ ! -d "$BACKUP_DIR" ]; then
 fi
 
 # Extract Moodle directory and data
-if [ -f $(ls -Art "$BACKUP_DIR"/moodle_*.tar.gz | tail -n 1) ]; then
+LATEST_MOODLE_DIR=$(ls -Art "$BACKUP_DIR"/moodle_*.tar.gz | tail -n 1)
+if [ -f "$LATEST_MOODLE_DIR" ]; then
     log_message "Extracting Moodle directory: $LATEST_MOODLE_DIR"
     tar -xzf "$LATEST_MOODLE_DIR" -C "$MOODLE_ROOT_DIR"
+else
+    log_message "Unable to find the latest Moodle directory archive."
+    exit 1
 fi
 
-if [ -f $(ls -Art "$BACKUP_DIR"/moodledata_*.tar.gz | tail -n 1) ]; then
-    log_message "Extracting Moodle data: $LATEST_MOODLEDATA_DIR"
+LATEST_MOODLEDATA_DIR=$(ls -Art "$BACKUP_DIR"/moodledata_*.tar.gz | tail -n 1)
+if [ -f "$LATEST_MOODLEDATA_DIR" ]; then
+    log_message "Extracting Moodle directory: $LATEST_MOODLEDATA_DIR"
     tar -xzf "$LATEST_MOODLEDATA_DIR" -C "$MOODLE_ROOT_DIR"
+else
+    log_message "Unable to find the latest Moodle directory archive."
+    exit 1
 fi
 
 # Restore Moodle database
@@ -48,15 +56,24 @@ if [ -f "$LATEST_DATABASE_BACKUP" ]; then
     if [ $(mysql -u "$2" -p"$3" -e "SELECT User FROM mysql.user;" | grep -c "$DBUSER") -eq 0 ]; then
         log_message "Creating Moodle database user: $DBUSER"
         mysql -u "$2" -p"$3" -e "CREATE USER $DBUSER@localhost IDENTIFIED BY '$DBPASS'; GRANT ALL PRIVILEGES ON *.* TO $DBUSER@localhost;"
+        else
+        log_message "Unable to create Moodle database user"
+        exit 1;
     fi
     
     # Check if database exists
     if [ $(mysql -u "$2" -p"$3" -e "SHOW DATABASES;" | grep -c "$DBNAME") -eq 0 ]; then
         log_message "Creating Moodle database: $DBNAME"
         mysql -u "$DBUSER" -p"$DBPASS" -e "CREATE DATABASE $DBNAME;"
+        else
+        log_message "Unable to create Moodle database"
+        exit 1;
     fi
     
     # Import Moodle database backup
     log_message "Importing Moodle database backup: $LATEST_DATABASE_BACKUP"
     mysql -u "$DBUSER" -p"$DBPASS" $DBNAME < "$LATEST_DATABASE_BACKUP"
+else
+    log_message "Unable to find the latest Moodle database archive"
+    exit 1;
 fi
