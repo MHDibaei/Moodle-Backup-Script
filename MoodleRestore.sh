@@ -35,8 +35,9 @@ if [ -f $(ls -Art "$BACKUP_DIR"/moodledata_*.tar.gz | tail -n 1) ]; then
 fi
 
 # Restore Moodle database
-if [ -f $(ls -Art "$BACKUP_DIR"/moodle-database_*.sql | tail -n 1) ]; then
-    log_message "Restoring database from: $file"
+LATEST_DATABASE_BACKUP=$(ls -Art "$BACKUP_DIR"/moodle-database_*.sql | tail -n 1)
+if [ -f "$LATEST_DATABASE_BACKUP" ]; then
+    log_message "Restoring database from: $LATEST_DATABASE_BACKUP"
     
     # Extract database credentials from Moodle configuration
     DBUSER=$(cat "$MOODLE_ROOT_DIR"/moodle/config.php | grep "\$CFG->dbuser" | cut -d "'" -f 2)
@@ -56,6 +57,6 @@ if [ -f $(ls -Art "$BACKUP_DIR"/moodle-database_*.sql | tail -n 1) ]; then
     fi
     
     # Import Moodle database backup
-    log_message "Importing Moodle database backup: $file"
-    mysql -u "$DBUSER" -p"$DBPASS" $DBNAME < "$file"
+    log_message "Importing Moodle database backup: $LATEST_DATABASE_BACKUP"
+    mysql -u "$DBUSER" -p"$DBPASS" $DBNAME < "$LATEST_DATABASE_BACKUP"
 fi
