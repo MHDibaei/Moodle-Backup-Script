@@ -27,7 +27,7 @@ fi
 LATEST_MOODLE_DIR=$(ls -Art "$BACKUP_DIR"/moodle_*.tar.gz | tail -n 1)
 if [ -f "$LATEST_MOODLE_DIR" ]; then
     log_message "Extracting Moodle directory: $LATEST_MOODLE_DIR"
-    tar -xzf "$LATEST_MOODLE_DIR" -C "$MOODLE_ROOT_DIR"
+    tar -xzf "$BACKUP_DIR/$LATEST_MOODLE_DIR" -C "$MOODLE_ROOT_DIR"
 else
     log_message "Unable to find the latest Moodle directory archive."
     exit 1
@@ -36,7 +36,7 @@ fi
 LATEST_MOODLEDATA_DIR=$(ls -Art "$BACKUP_DIR"/moodledata_*.tar.gz | tail -n 1)
 if [ -f "$LATEST_MOODLEDATA_DIR" ]; then
     log_message "Extracting Moodle directory: $LATEST_MOODLEDATA_DIR"
-    tar -xzf "$LATEST_MOODLEDATA_DIR" -C "$MOODLE_ROOT_DIR"
+    tar -xzf "$BACKUP_DIR/$LATEST_MOODLEDATA_DIR" -C "$MOODLE_ROOT_DIR"
 else
     log_message "Unable to find the latest Moodle directory archive."
     exit 1
